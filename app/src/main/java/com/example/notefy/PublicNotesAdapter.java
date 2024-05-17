@@ -1,5 +1,6 @@
 package com.example.notefy;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -40,7 +41,7 @@ public class PublicNotesAdapter extends FirebaseRecyclerAdapter<PublicNote, Publ
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull ViewHolder viewHolder, int i, @NonNull PublicNote note) {
+    protected void onBindViewHolder(@NonNull ViewHolder viewHolder, @SuppressLint("RecyclerView") int i, @NonNull PublicNote note) {
 
         String key = getRef(i).getKey();
 
@@ -114,6 +115,7 @@ public class PublicNotesAdapter extends FirebaseRecyclerAdapter<PublicNote, Publ
         viewHolder.btnreq.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show();
 
                 Intent it = new Intent(context,EditRequestActivity.class);
                 it.putExtra("note",note.getDescription());
@@ -128,13 +130,18 @@ public class PublicNotesAdapter extends FirebaseRecyclerAdapter<PublicNote, Publ
                 usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+
+
                         for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                            // Check each user node for the child ID
-                            userSnapshot.child("Notes").getRef().orderByKey().equalTo(key)
+                            Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show();
+
+                            userSnapshot.child("Notes").child("Public").getRef().orderByKey().equalTo(key)
                                     .addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot noteSnapshot) {
+
                                             if (noteSnapshot.exists()) {
+
                                                 it.putExtra("rname",note.getTitle());
                                                 it.putExtra("ogid",userSnapshot.getKey());
                                                 it.putExtra("noteid",key);
@@ -149,7 +156,7 @@ public class PublicNotesAdapter extends FirebaseRecyclerAdapter<PublicNote, Publ
 
                                         @Override
                                         public void onCancelled(DatabaseError databaseError) {
-                                            System.err.println("Listener was cancelled");
+                                            Toast.makeText(context, "failed to add", Toast.LENGTH_SHORT).show();
                                         }
                                     });
                         }
